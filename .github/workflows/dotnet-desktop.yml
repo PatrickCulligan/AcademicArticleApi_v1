@@ -24,9 +24,10 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v1
         with:
-          organization: x00218712
-          projectKey:   x00218712_testr
-          projectName:   AcademicArticleApi
+          projectBaseDir: .
+          args: >
+            -Dsonar.organization=x00218712
+            -Dsonar.projectKey=x00218712_testr
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -47,8 +48,9 @@ jobs:
         if: always()
         uses: SonarSource/sonarcloud-github-action@v1
         with:
-          # re‑use the same parameters to publish & wait for Quality Gate
-          organization: x00218712
-          projectKey:   x00218712_testr
+          projectBaseDir: .
+          args: >
+            -Dsonar.organization=x00218712
+            -Dsonar.projectKey=x00218712_testr
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
