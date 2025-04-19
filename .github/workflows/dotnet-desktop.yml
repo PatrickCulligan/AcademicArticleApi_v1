@@ -11,24 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Check out the repo
-      - name: Checkout code
+      # 1. Checkout the code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup .NET SDK (change version if needed)
-      - name: Setup .NET
+      # 2. Setup .NET 8 SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '8.0.x'
 
       # 3. Restore dependencies
-      - name: Restore
+      - name: Restore dependencies
         run: dotnet restore
 
-      # 4. Build in Release
-      - name: Build
+      # 4. Build in Release mode
+      - name: Build project
         run: dotnet build --no-restore --configuration Release
 
       # 5. Run unit tests
-      - name: Test
+      - name: Run tests
         run: dotnet test --no-restore --verbosity normal
