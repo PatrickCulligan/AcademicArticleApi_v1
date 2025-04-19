@@ -10,24 +10,24 @@ jobs:
   build-and-analyze:
     runs-on: ubuntu-latest
     steps:
-    # ← Add this step to install Java 17 for SonarScanner
+      # 1) Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Install Java 17 for SonarScanner
       - name: Setup Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-          
-      # 1) Checkout source code
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      # 2) Setup .NET 8 SDK
+      # 3) Install .NET 8 SDK
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      # 3) Prepare SonarCloud analysis configuration
+      # 4) Prepare SonarCloud analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
@@ -38,20 +38,20 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # 4) Restore dependencies
+      # 5) Restore NuGet packages
       - name: Restore dependencies
         run: dotnet restore
 
-      # 5) Build in Release mode
+      # 6) Build in Release configuration
       - name: Build project
         run: dotnet build --no-restore --configuration Release
 
-      # 6) Run unit tests
+      # 7) Run unit tests
       - name: Run tests
         run: dotnet test --no-restore --verbosity normal
 
-      # 7) Publish SonarCloud results and enforce Quality Gate
-      - name: SonarCloud Publish Quality Gate Result
+      # 8) Publish SonarCloud Quality Gate result
+      - name: SonarCloud Publish & Quality Gate
         if: always()
         uses: SonarSource/sonarcloud-github-action@v2
         with:
@@ -61,4 +61,27 @@ jobs:
             -Dsonar.projectKey=x00218712_article
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          
+
+  dependency_check:
+    runs-on: ubuntu-latest
+    steps:
+      # A) Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # B) Run OWASP Dependency-Check
+      - name: Dependency-Check Scan
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
+        with:
+          project: 'AcademicArticleApi'
+          path: '.'
+          format: 'HTML'
+          args: >
+            --failOnCVSS 8
+      # C) Upload the generated report
+      - name: Upload Dependency-Check report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dependency-Check Report
+          path: ${{ github.workspace }}/reports
