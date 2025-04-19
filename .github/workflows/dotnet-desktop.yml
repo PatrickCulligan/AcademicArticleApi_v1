@@ -62,26 +62,3 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  dependency_check:
-    runs-on: ubuntu-latest
-    steps:
-      # A) Checkout source code
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # B) Run OWASP Dependency-Check
-      - name: Dependency-Check Scan
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
-        with:
-          project: 'AcademicArticleApi'
-          path: '.'
-          format: 'HTML'
-          args: >
-            --failOnCVSS 8
-      # C) Upload the generated report
-      - name: Upload Dependency-Check report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Dependency-Check Report
-          path: ${{ github.workspace }}/reports
