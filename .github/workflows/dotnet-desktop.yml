@@ -34,7 +34,7 @@ jobs:
           projectBaseDir: .
           args: >
             -Dsonar.organization=x00218712
-            -Dsonar.projectKey=x00218712_testr
+            -Dsonar.projectKey=x00218712_article
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -58,7 +58,7 @@ jobs:
           projectBaseDir: .
           args: >
             -Dsonar.organization=x00218712
-            -Dsonar.projectKey=x00218712_testr
+            -Dsonar.projectKey=x00218712_article
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           
