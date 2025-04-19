@@ -1,0 +1,31 @@
+# OWASP Dependency checker
+# based on docker image built nightly
+
+name: OWASP Dependency Checker       
+  
+on:
+  workflow_dispatch:                  # manually triggered
+
+jobs:
+  dependency_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
+        with:
+          project: 'BPCalculation'
+          path: '.'
+          format: 'HTML'    
+          args: >
+            --failOnCVSS 8            
+          # fail if CVSS score (CVE scoring system) is High >=8
+          
+      - name: Upload Test results
+        uses: actions/upload-artifact@v4
+        with:
+           name: Depcheck report
+           path: ${{github.workspace}}/reports
