@@ -1,4 +1,4 @@
-name: .NET CI
+name: .NET CI + SonarCloud
 
 on:
   push:
@@ -7,28 +7,48 @@ on:
     branches: [ main, master ]
 
 jobs:
-  build-and-test:
+  build-and-analyze:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout the code
+      # 1) Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup .NET 8 SDK
+      # 2) Setup .NET 8 SDK
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      # 3. Restore dependencies
+      # 3) Prepare SonarCloud analysis configuration
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          organization: x00218712
+          projectKey:   x00218712_testr
+          projectName:   AcademicArticleApi
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # 4) Restore dependencies
       - name: Restore dependencies
         run: dotnet restore
 
-      # 4. Build in Release mode
+      # 5) Build in Release mode
       - name: Build project
         run: dotnet build --no-restore --configuration Release
 
-      # 5. Run unit tests
+      # 6) Run unit tests
       - name: Run tests
         run: dotnet test --no-restore --verbosity normal
+
+      # 7) Publish SonarCloud results and enforce Quality Gate
+      - name: SonarCloud Publish Quality Gate Result
+        if: always()
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          # re‑use the same parameters to publish & wait for Quality Gate
+          organization: x00218712
+          projectKey:   x00218712_testr
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
