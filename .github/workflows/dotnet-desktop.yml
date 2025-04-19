@@ -1,0 +1,34 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup .NET SDK (change version if needed)
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      # 3. Restore dependencies
+      - name: Restore
+        run: dotnet restore
+
+      # 4. Build in Release
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # 5. Run unit tests
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
